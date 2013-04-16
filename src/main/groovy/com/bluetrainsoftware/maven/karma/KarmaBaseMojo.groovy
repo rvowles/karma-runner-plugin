@@ -13,6 +13,7 @@ import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Component
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
+import org.codehaus.plexus.util.StringUtils
 
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
@@ -41,9 +42,9 @@ class KarmaBaseMojo extends AbstractMojo {
   @Parameter(property = "run.karmaLocalisation", defaultValue = "\${user.home}/.karma/karma.local.js")
   protected String localisationFileName
 
-  Map<String, File> karmaDirectories = new HashMap<>()
+  Map<String, String> karmaDirectories = new HashMap<>()
 
-  private void karmaDirectory(Artifact artifact, File directory) {
+  protected void karmaDirectory(Artifact artifact, String directory) {
     karmaDirectories[artifact.artifactId.replace('-', '_')] = directory
   }
 
@@ -70,7 +71,7 @@ class KarmaBaseMojo extends AbstractMojo {
           if (!overrideFile.exists())
             throw new MojoExecutionException("Cannot find override directory for ${artifact.groupId}:${artifact.artifactId} system property -D${expectedProperty}")
 
-          karmaDirectory(artifact, overrideFile)
+          karmaDirectory(artifact, override)
         } else {
           extractWar(artifact)
         }
@@ -78,11 +79,11 @@ class KarmaBaseMojo extends AbstractMojo {
     }
 
     def karmaEngine = new SimpleTemplateEngine()
-    def binding = [karma:[:]]
+    def binding = [karma:karmaDirectories]
 
-    karmaDirectories.each { key, file -> binding.karma[key] = file.absolutePath.substring(project.basedir.absolutePath.length() + 1)}
+    File finalKarmaConfigurationFile = new File(project.build.directory, karmaFile)
 
-    FileWriter writer = new FileWriter(new File(project.build.directory, karmaFile))
+    FileWriter writer = new FileWriter(finalKarmaConfigurationFile)
     karmaEngine.createTemplate(karmaTemplate).make(binding).writeTo(writer)
 
     // copy any local extensions file in. Because the config file, this allows overriding of settings from the main file as well
@@ -101,6 +102,35 @@ class KarmaBaseMojo extends AbstractMojo {
     writer.close()
 
     getLog().info("karma: ${karmaFile} generated, starting Karma")
+
+    runKarma(finalKarmaConfigurationFile)
+  }
+
+  // some of this code taken from maven-karma-plugin, StartMojo.java in
+  // https://github.com/karma-runner/maven-karma-plugin
+
+  protected boolean runKarma(File finalKarmaConfigurationFile) {
+    Process karma = createKarmaProcess(finalKarmaConfigurationFile)
+
+    BufferedReader karmaOutputReader = null;
+    try {
+      karmaOutputReader = new BufferedReader(new InputStreamReader(karma.inputStream))
+
+      for (String line = karmaOutputReader.readLine(); line != null; line = karmaOutputReader.readLine()) {
+        getLog().info("karma: " + line);
+      }
+
+      return (karma.waitFor() == 0);
+
+    } catch (IOException e) {
+      throw new MojoExecutionException("There was an error reading the output from Karma.", e);
+
+    } catch (InterruptedException e) {
+      throw new MojoExecutionException("The Karma process was interrupted.", e);
+
+    } finally {
+      karmaOutputReader.close()
+    }
   }
 
   void extractWar(Artifact artifact) {
@@ -137,6 +167,35 @@ class KarmaBaseMojo extends AbstractMojo {
 
     war.close()
 
-    karmaDirectory(artifact, exportDirectory)
+    karmaDirectory(artifact, exportDirectory.absolutePath.substring(project.build.directory.length() + 1))
+  }
+
+  protected Process createKarmaProcess(File configFile) throws MojoExecutionException {
+
+    ProcessBuilder builder
+
+    if (File.separator == '\\') // Windows
+      builder = new ProcessBuilder("cmd", "/C karma")
+    else
+      builder = new ProcessBuilder("karma", "start", configFile.getAbsolutePath());
+
+    List<String> command = builder.command();
+
+    command.addAll(getExtraArguments());
+
+    builder.redirectErrorStream(true);
+
+    try {
+      getLog().info("karma : ${command.join(' ')}")
+
+      return builder.start();
+
+    } catch (IOException e) {
+      throw new MojoExecutionException("There was an error executing Karma.", e);
+    }
+  }
+
+  protected List<String> getExtraArguments() {
+    return [] as List<String>
   }
 }

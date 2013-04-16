@@ -10,4 +10,8 @@ import org.apache.maven.plugins.annotations.ResolutionScope
  */
 @Mojo(name="voyeur", requiresProject = false, requiresDependencyResolution = ResolutionScope.TEST, defaultPhase = LifecyclePhase.TEST)
 class KarmaWatchMojo extends KarmaBaseMojo {
+  @Override
+  protected List<String> getExtraArguments() {
+    return ["--auth-watch", "--no-single-run"] as List<String>
+  }
 }

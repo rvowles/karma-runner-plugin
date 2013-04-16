@@ -3,12 +3,16 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.bluetrainsoftware.maven</groupId>
-  <artifactId>karma-maven-plugin</artifactId>
+  <artifactId>karma-runner-plugin</artifactId>
   <version>1.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
-  <name>karma-maven-plugin</name>
+  <name>Maven Karma Runner plugin</name>
   <url>http://www.github.com/bluetrainsoftware</url>
+
+  <description>
+    This plugin provides support for running Karma on Mac OS X, Linux and Windows. Karma must be in the path. Further instructions are in the README.markdown.
+  </description>
 
   <developers>
     <developer>
