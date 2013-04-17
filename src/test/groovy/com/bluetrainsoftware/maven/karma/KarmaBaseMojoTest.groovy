@@ -101,7 +101,7 @@ class KarmaBaseMojoTest {
     karma.localisationFileName = "src/test/resources/karma.extra.js"
     karma.execute()
 
-    assert new File("target/karma-runner.cfg.js").text.trim() == """var files = [
+    assert new File("target/karma-runner.cfg.js").text.trim().replaceAll("\\\\","/") == """var files = [
   'karma/sausage/angular/uoa/**/*.js',
   'karma/fried-tomato/angular/**/*.js',
   'src/test/resources/angular/**/*.js',
