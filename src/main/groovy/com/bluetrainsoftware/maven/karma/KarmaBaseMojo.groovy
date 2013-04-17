@@ -175,7 +175,7 @@ class KarmaBaseMojo extends AbstractMojo {
     ProcessBuilder builder
 
     if (File.separator == '\\') // Windows
-      builder = new ProcessBuilder("cmd", "/C karma")
+      builder = new ProcessBuilder("cmd", "/C karma start " + configFile.getAbsolutePath())
     else
       builder = new ProcessBuilder("karma", "start", configFile.getAbsolutePath());
 
