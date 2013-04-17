@@ -102,3 +102,18 @@ None of the configuration options are required, those listed are the defaults. T
      </plugin>
 
 I recommend you put this in your war or war-overlay functional parent. It will not fail if it cannot find the karma template, if it doesn't find it, it just issues a warning and exits.
+
+Running the plugin
+------------------
+
+The plugin is run from the command line with:
+
+    karma-runner:test
+
+This puts Karma into a single run, no auto watch mode.
+
+or
+
+    karma-runner:voyeur
+
+This puts Karma into its mode of auto watching for file updates and re-running tests.
