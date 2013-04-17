@@ -10,6 +10,12 @@ common libraries in another, etc. But Karma needs access to all of these files t
 What this plugin lets you do is specify a common configuration file for your Karma settings, let the plugin specify where the files needed for each overlay come from (if any) and also include personal
 overrides as necessary.
 
+Requirements
+------------
+* Java 7 - no mucking around with obsolete versions of Java
+* Maven 3.0.4 - its been out forever, really, you should be using it
+* Karma (I'm using 0.8.5) and all its requirements (nodejs, npm, etc)
+
 How it works
 ------------
 
