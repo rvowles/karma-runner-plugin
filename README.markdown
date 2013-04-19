@@ -123,3 +123,24 @@ or
     karma-runner:voyeur
 
 This puts Karma into its mode of auto watching for file updates and re-running tests.
+
+Making the plugin part of your tests
+------------------------------------
+
+If you wish to ensure that Karma gets run as part of your tests, you can include the karma-runner as an execution.
+
+     <plugin>
+        <groupId>com.bluetrainsoftware.maven</groupId>
+        <artifactId>karma-runner-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <id>karma-test</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <phase>test</phase>
+          </execution>
+        </executions>
+    </plugin>
+
