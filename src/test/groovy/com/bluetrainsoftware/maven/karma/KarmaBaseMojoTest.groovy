@@ -24,6 +24,11 @@ class KarmaBaseMojoTest {
 
   class DummyKarmaRunMojo extends KarmaBaseMojo {
     @Override
+    void extractJar(Artifact artifact) {
+
+    }
+
+    @Override
     protected boolean runKarma(File finalKarmaConfigurationFile) {
       return true
     }

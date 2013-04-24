@@ -59,22 +59,21 @@ class KarmaBaseMojo extends AbstractMojo {
     }
 
     project.getArtifacts().each { Artifact artifact ->
+      String expectedProperty = "karma." + artifact.artifactId
 
-      if (artifact.type == 'war') {
-        String expectedProperty = "karma." + artifact.artifactId
+      String override = System.getProperty(expectedProperty)
 
-        String override = System.getProperty(expectedProperty)
+      if (override != null) {
+        File overrideFile = new File(override)
 
-        if (override != null) {
-          File overrideFile = new File(override)
+        if (!overrideFile.exists())
+          throw new MojoExecutionException("Cannot find override directory for ${artifact.groupId}:${artifact.artifactId} system property -D${expectedProperty}")
 
-          if (!overrideFile.exists())
-            throw new MojoExecutionException("Cannot find override directory for ${artifact.groupId}:${artifact.artifactId} system property -D${expectedProperty}")
-
-          karmaDirectory(artifact, override)
-        } else {
-          extractWar(artifact)
-        }
+        karmaDirectory(artifact, override)
+      } else if (artifact.type == 'war') {
+        extractWar(artifact)
+      } else if (artifact.type == 'jar') { // could be a Servlet 3.0 jar with /META-INF/resources
+        extractJar(artifact)
       }
     }
 
@@ -134,6 +133,41 @@ class KarmaBaseMojo extends AbstractMojo {
   }
 
   void extractWar(Artifact artifact) {
+    File exportDirectory = createExportDirectory(artifact)
+
+    JarFile war = new JarFile(artifact.file)
+
+    getLog().info("karma: extracting ${artifact.groupId}:${artifact.artifactId}")
+
+    war.entries().each { JarEntry next ->
+      if (!next.name.endsWith(".jar") && !next.name.startsWith("META-INF") && !next.name.startsWith("WEB-INF/classes") && !next.name.startsWith("EXT-INF") ) {
+
+        exportFile(war, next, exportDirectory, next.name)
+
+      }
+    }
+
+    war.close()
+
+    karmaDirectory(artifact, exportDirectory.absolutePath.substring(project.build.directory.length() + 1))
+  }
+
+  protected void exportFile(JarFile jar, JarEntry next, File exportDirectory, String name) {
+    File kFile = new File(exportDirectory, name)
+
+    if (next.isDirectory())
+      kFile.mkdirs()
+    else {
+      // ensure directories exist
+      if (kFile.parentFile) {
+        kFile.parentFile.mkdirs()
+      }
+
+      IOUtils.copy(jar.getInputStream(next), new FileOutputStream(kFile))
+    }
+  }
+
+  protected File createExportDirectory(Artifact artifact) {
     File exportDirectory = new File(project.build.directory, "karma" + File.separator + artifact.artifactId)
 
     // check if it exists, delete it if so
@@ -143,31 +177,27 @@ class KarmaBaseMojo extends AbstractMojo {
 
     exportDirectory.mkdirs()
 
-    JarFile war = new JarFile(artifact.file)
+    return exportDirectory
+  }
 
-    getLog().info("karma: extracting ${artifact.groupId}:${artifact.artifactId}")
+  public static final SERVLET3_OFFSET = "META-INF/resources"
 
-    war.entries().each { JarEntry next ->
-      if (!next.name.endsWith(".jar") && !next.name.startsWith("META-INF") && !next.name.startsWith("WEB-INF/classes") && !next.name.startsWith("EXT-INF") ) {
+  void extractJar(Artifact artifact) {
+    JarFile jar = new JarFile(artifact.file)
 
-        File kFile = new File(exportDirectory, next.name)
+    if (jar.getEntry(SERVLET3_OFFSET)) {
+      File exportDirectory = createExportDirectory(artifact)
 
-        if (next.isDirectory())
-          kFile.mkdirs()
-        else {
-          // ensure directories exist
-          if (kFile.parentFile) {
-            kFile.parentFile.mkdirs()
-          }
-
-          IOUtils.copy(war.getInputStream(next), new FileOutputStream(kFile))
+      jar.entries().each { JarEntry file ->
+        if (file.name.startsWith(SERVLET3_OFFSET) && !file.name.startsWith("META-INF/resources/WEB-INF/classes")) {
+          exportFile(jar, file, exportDirectory, file.name.substring(SERVLET3_OFFSET.length()))
         }
       }
+
+      karmaDirectory(artifact, exportDirectory.absolutePath.substring(project.build.directory.length() + 1))
     }
 
-    war.close()
-
-    karmaDirectory(artifact, exportDirectory.absolutePath.substring(project.build.directory.length() + 1))
+    jar.close()
   }
 
   protected Process createKarmaProcess(File configFile) throws MojoExecutionException {
