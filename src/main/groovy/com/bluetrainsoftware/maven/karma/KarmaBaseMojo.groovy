@@ -102,7 +102,9 @@ class KarmaBaseMojo extends AbstractMojo {
 
     getLog().info("karma: ${karmaFile} generated, starting Karma")
 
-    runKarma(finalKarmaConfigurationFile)
+    if (!runKarma(finalKarmaConfigurationFile)) {
+      throw new MojoFailureException("Karma test run failed.")
+    }
   }
 
   // some of this code taken from maven-karma-plugin, StartMojo.java in

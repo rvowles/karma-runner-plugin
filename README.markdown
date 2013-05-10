@@ -6,6 +6,8 @@ When running Karma against an artifact that is being used in a team development 
 * You have people on a variety of operating systems, so what browsers, ports and so forth are available to you are different between people even if the javascript tests are the same
 * War overlays - war overlays allow you to split your projects up into pieces and the final war process will overlay them on top of each other. This allows you to have common javascript in one war overlay,
 common libraries in another, etc. But Karma needs access to all of these files to run, and where they will be checked out for each person will differ (if they have them at all) and this won't work on a build server.
+* Servlet 3 JARs - a bit like war overlays, these are considerably better in that they allow you modularity in your Servlet container. But each jar may have a set of static resources located in
+/META-INF/resources - and Karma Runner takes care of those.
 
 What this plugin lets you do is specify a common configuration file for your Karma settings, let the plugin specify where the files needed for each overlay come from (if any) and also include personal
 overrides as necessary.
@@ -39,11 +41,18 @@ To support overlays, the plugin looks for war dependencies and extracts them int
       <classifier>underlay</classifier>
       <type>war</type>
     </dependency>
+    <dependency>
+      <groupId>nz.ac.auckland.common</groupId>
+      <artifactId>common-angular-test</artifactId>
+      <version>[1,2)</version>
+      <scope>test</scope>  <!-- this is a Servlet 3 jar -->
+    </dependency>
 
 will be extracted into
 
     target/karma/common-javascript
     target/karma/common-angular
+    target/karma/common-angular-test
 
 It will make a variable
 
@@ -53,6 +62,7 @@ available with the directory the files were extracted to, but if there is a - in
 
    karma.common_javascript=target/karma/common-javascript
    karma.common_angular=target/karma/common-angular
+   karma.common_angular_test=target/karma/common-angular-test
 
 added to the binding given to your template file.
 
@@ -78,7 +88,7 @@ Providing extra configuration
 -----------------------------
 
 You can provide an extra configuration file that gets appended on the end. This means you can replace any property that is already defined (as the file is javascript), and typically you would do this
-for browser support which tends to vary.
+for browser support which tends to vary. It is also useful for headless Continuous Integration servers like Jenkins, Team City, and Bamboo.
 
 The default file is
 

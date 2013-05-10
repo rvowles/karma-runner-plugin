@@ -1,8 +1,10 @@
 package com.bluetrainsoftware.maven.karma
 
+import junit.framework.Assert
 import org.apache.maven.artifact.Artifact
 import org.apache.maven.model.Build
 import org.apache.maven.plugin.MojoExecutionException
+import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugin.logging.Log
 import org.apache.maven.project.MavenProject
 import org.junit.Before
@@ -21,6 +23,7 @@ class KarmaBaseMojoTest {
 
   private Log log
   private KarmaBaseMojo karma
+  private boolean returnValue = true
 
   class DummyKarmaRunMojo extends KarmaBaseMojo {
     @Override
@@ -30,7 +33,7 @@ class KarmaBaseMojoTest {
 
     @Override
     protected boolean runKarma(File finalKarmaConfigurationFile) {
-      return true
+      return returnValue
     }
   }
 
@@ -121,5 +124,15 @@ var somenonsense = 1;"""
     assert new File("target/karma/fried-tomato/toms.js").exists()
 
     karma.execute() // should execute twice ok
+
+    returnValue = false
+
+    try {
+      karma.execute()
+      Assert.fail("Expected MojoFailureException")
+    } catch (MojoFailureException mfe) {
+    }
+
+    returnValue = true
   }
 }
