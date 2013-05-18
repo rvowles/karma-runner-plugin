@@ -2,85 +2,42 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>com.bluetrainsoftware.parent</groupId>
+    <artifactId>maven-plugin-parent</artifactId>
+    <version>1.1</version>
+  </parent>
+
   <groupId>com.bluetrainsoftware.maven</groupId>
   <artifactId>karma-runner-plugin</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.4-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Maven Karma Runner plugin</name>
-  <url>http://www.github.com/bluetrainsoftware</url>
 
   <description>
-    This plugin provides support for running Karma on Mac OS X, Linux and Windows. Karma must be in the path. Further instructions are in the README.markdown.
+    This plugin provides support for running Karma on Mac OS X, Linux and Windows.
+    Karma must be in the path. Further instructions are in the README.markdown.
   </description>
 
-  <developers>
-    <developer>
-      <name>Richard Vowles</name>
-      <email>richardatbluetrainsoftware.com@yep</email>
-      <url>http://www.bluetrainsoftware.com</url>
-    </developer>
-  </developers>
-
-  <properties>
-    <groovy.version>2.1.3</groovy.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.version>3.0.4</maven.version>
-  </properties>
-
-  <prerequisites>
-    <maven>[3.0.4,)</maven>
-  </prerequisites>
+  <scm>
+    <connection>scm:git:git@github.com:rvowles/karma-runner-plugin</connection>
+    <developerConnection>scm:git:git@github.com:rvowles/karma-runner-plugin</developerConnection>
+    <url>http://github.com/rvowles/karma-runner-plugin</url>
+  </scm>
 
   <dependencies>
+
     <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model</artifactId>
-      <version>${maven.version}</version>
+      <groupId>com.bluetrainsoftware.composite</groupId>
+      <artifactId>composite-maven-plugin</artifactId>
+      <version>[1,2)</version>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-      <version>3.0-alpha-2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.plugin-tools</groupId>
-      <artifactId>maven-plugin-annotations</artifactId>
-      <version>3.1</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>${maven.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-archiver</artifactId>
-      <version>2.5</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
-      <version>3.0.8</version>
-    </dependency>
-
-    <!-- supporting broken dependency model -->
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact</artifactId>
-      <version>${maven.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>${groovy.version}</version>
+      <groupId>com.bluetrainsoftware.composite</groupId>
+      <artifactId>composite-groovy</artifactId>
+      <version>[1,2)</version>
     </dependency>
 
     <dependency>
@@ -90,155 +47,10 @@
     </dependency>
 
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.10</version>
-      <scope>test</scope>
+      <groupId>com.bluetrainsoftware.composite</groupId>
+      <artifactId>composite-unit-test</artifactId>
+      <version>[1,2)</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>1.9.5</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-        </configuration>
-        <executions>
-          <execution>
-            <id>mojo-descriptor</id>
-            <goals>
-              <goal>descriptor</goal>
-            </goals>
-          </execution>
-          <!-- if you want to generate help goal -->
-          <execution>
-            <id>generated-helpmojo</id>
-            <goals>
-              <goal>helpmojo</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-
-      <!-- lets us to code coverage tests and get said reports as part of our test run -->
-
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.6.2.201302030002</version>
-        <executions>
-          <execution>
-            <id>prepare-agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>report</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.14</version>
-        <configuration>
-          <useSystemClassLoader>true</useSystemClassLoader>
-          <useManifestOnlyJar>false</useManifestOnlyJar>
-          <failIfNoTests>false</failIfNoTests>
-          <includes>
-            <include>**/*Test.java</include>
-            <include>**/*Tests.java</include>
-          </includes>
-          <excludes>
-            <exclude>**/*$*</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <compilerId>groovy-eclipse-compiler</compilerId>
-          <!-- set verbose to be true if you want lots of uninteresting messages -->
-          <!-- <verbose>true</verbose> -->
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-eclipse-compiler</artifactId>
-            <version>2.7.0-01</version>
-          </dependency>
-          <dependency>
-            <!-- force a newer version of Groovy -->
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-eclipse-batch</artifactId>
-            <version>2.1.1-01</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>src/main/groovy</source>
-              </sources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-test-source</id>
-            <phase>generate-test-sources</phase>
-            <goals>
-              <goal>add-test-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>src/test/groovy</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.2.1</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>package</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
