@@ -12,6 +12,11 @@ common libraries in another, etc. But Karma needs access to all of these files t
 What this plugin lets you do is specify a common configuration file for your Karma settings, let the plugin specify where the files needed for each overlay come from (if any) and also include personal
 overrides as necessary.
 
+Apache Maven Central
+--------------------
+
+The karma-runner plugin is now in Apache Maven Central and is currently version 1.4
+
 Requirements
 ------------
 * Java 7 - no mucking around with obsolete versions of Java
@@ -101,7 +106,7 @@ Maven Configuration
      <plugin>
        <groupId>com.bluetrainsoftware.maven</groupId>
        <artifactId>karma-maven-plugin</artifactId>
-       <version>1.1</version>
+       <version>1.4</version>
        <configuration>
           <templateFile>karma-template.cfg.js</templateFile> <!-- the file the plugin picks up and replaces stuff in -->
           <karmaFile>karma-runner.cfg.js</karmaFile> <!-- this is the file that gets generated, that Karma runs -->
@@ -114,7 +119,7 @@ None of the configuration options are required, those listed are the defaults. T
      <plugin>
        <groupId>com.bluetrainsoftware.maven</groupId>
        <artifactId>karma-maven-plugin</artifactId>
-       <version>1.1</version>
+       <version>1.4</version>
      </plugin>
 
 I recommend you put this in your war or war-overlay functional parent. It will not fail if it cannot find the karma template, if it doesn't find it, it just issues a warning and exits.
@@ -142,7 +147,7 @@ If you wish to ensure that Karma gets run as part of your tests, you can include
      <plugin>
         <groupId>com.bluetrainsoftware.maven</groupId>
         <artifactId>karma-runner-plugin</artifactId>
-        <version>1.1</version>
+        <version>1.4</version>
         <executions>
           <execution>
             <id>karma-test</id>
