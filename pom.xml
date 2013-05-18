@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -10,7 +9,7 @@
 
   <groupId>com.bluetrainsoftware.maven</groupId>
   <artifactId>karma-runner-plugin</artifactId>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.4</version>
   <packaging>maven-plugin</packaging>
 
   <name>Maven Karma Runner plugin</name>
@@ -24,6 +23,7 @@
     <connection>scm:git:git@github.com:rvowles/karma-runner-plugin</connection>
     <developerConnection>scm:git:git@github.com:rvowles/karma-runner-plugin</developerConnection>
     <url>http://github.com/rvowles/karma-runner-plugin</url>
+    <tag>karma-runner-plugin-1.4</tag>
   </scm>
 
   <dependencies>
