@@ -15,7 +15,7 @@ overrides as necessary.
 Apache Maven Central
 --------------------
 
-The karma-runner plugin is now in Apache Maven Central and is currently version 1.4
+The karma-runner plugin is now in Apache Maven Central and is currently version 1.5
 
 Requirements
 ------------
@@ -78,16 +78,24 @@ A look in the tests show a sample karma file:
      '${karma.fried_tomato}/angular/**/*.js',
      '${karma.eggs}/angular/**/*.js',
      'src/main/webapp/angular/**'
-   ];
+    ];
 
 Overriding Artifacts
 --------------------
 
-You can provide a system property with the name:
+This is an important part of debugging. You may get into situations where you want to ship your front end with your mock data, yet have the option to later only use it for testing (so you don't get stuck in the functional testing loop).
+We separate the front-end into two artifacts - "user" and "user-test" (as an example) - these are then combined in another artifact (a war artifact). This means for initial customer demos, you can have "user-test" as a full dependency
+in "war", and a test dependendency in "user". When you have a real-backend, you can swap out the "user-test" for that backend in your "war" artifact.
+
+This also happens when we are working on shared Angular directives and they have an impact on our current tests. Ensuring that our Karma is pointing to the latest source code (and not the released artifacts or installed snapshots) is
+incredibly useful and a productive use of time.
+
+To point to a location on disk instead of having the plugin extract the contents of your jar/war file, you can provide a system property with the name:
 
     karma.common.javascript=/my/projects
 
-and this will override the extraction (which will not happen) if you are working with that project directly on disk and want Karma to have live updates from it.
+and this will override the extraction (which will not happen) if you are working with that project directly on disk and want Karma to have live updates from it. *This can be a relative path but that karma-runner will turn it into an
+absolute path*. The reason it does this is that the final karma-runner file gets created in the _target_ directory.
 
 Providing extra configuration
 -----------------------------
@@ -106,7 +114,7 @@ Maven Configuration
      <plugin>
        <groupId>com.bluetrainsoftware.maven</groupId>
        <artifactId>karma-maven-plugin</artifactId>
-       <version>1.4</version>
+       <version>1.5</version>
        <configuration>
           <templateFile>karma-template.cfg.js</templateFile> <!-- the file the plugin picks up and replaces stuff in -->
           <karmaFile>karma-runner.cfg.js</karmaFile> <!-- this is the file that gets generated, that Karma runs -->
@@ -119,7 +127,7 @@ None of the configuration options are required, those listed are the defaults. T
      <plugin>
        <groupId>com.bluetrainsoftware.maven</groupId>
        <artifactId>karma-maven-plugin</artifactId>
-       <version>1.4</version>
+       <version>1.5</version>
      </plugin>
 
 I recommend you put this in your war or war-overlay functional parent. It will not fail if it cannot find the karma template, if it doesn't find it, it just issues a warning and exits.
@@ -147,7 +155,7 @@ If you wish to ensure that Karma gets run as part of your tests, you can include
      <plugin>
         <groupId>com.bluetrainsoftware.maven</groupId>
         <artifactId>karma-runner-plugin</artifactId>
-        <version>1.4</version>
+        <version>1.5</version>
         <executions>
           <execution>
             <id>karma-test</id>
@@ -159,3 +167,9 @@ If you wish to ensure that Karma gets run as part of your tests, you can include
         </executions>
     </plugin>
 
+
+changelog
+=========
+
+1.5 - fixes a bug in the override path that prevented it from being used properly. Updated the documentation.
+1.4 - first release to the public.

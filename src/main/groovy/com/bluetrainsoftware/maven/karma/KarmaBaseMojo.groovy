@@ -69,7 +69,7 @@ class KarmaBaseMojo extends AbstractMojo {
         if (!overrideFile.exists())
           throw new MojoExecutionException("Cannot find override directory for ${artifact.groupId}:${artifact.artifactId} system property -D${expectedProperty}")
 
-        karmaDirectory(artifact, override)
+        karmaDirectory(artifact, overrideFile.absolutePath)
       } else if (artifact.type == 'war') {
         extractWar(artifact)
       } else if (artifact.type == 'jar') { // could be a Servlet 3.0 jar with /META-INF/resources

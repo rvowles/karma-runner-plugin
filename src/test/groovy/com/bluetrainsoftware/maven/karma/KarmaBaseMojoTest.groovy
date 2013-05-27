@@ -11,9 +11,7 @@ import org.junit.Before
 import org.junit.Test
 
 import static org.mockito.Matchers.anyString
-import static org.mockito.Mockito.mock
-import static org.mockito.Mockito.verify
-import static org.mockito.Mockito.when
+import static org.mockito.Mockito.*
 
 /**
 
@@ -101,7 +99,6 @@ class KarmaBaseMojoTest {
     File baseDir = setBaseDir(project)
     when(build.getDirectory()).thenReturn(new File(baseDir, "target").absolutePath)
 
-
     when(project.getArtifacts()).thenReturn(artifacts)
 
     karma.project = project
@@ -109,10 +106,12 @@ class KarmaBaseMojoTest {
     karma.localisationFileName = "src/test/resources/karma.extra.js"
     karma.execute()
 
+    String fullPath = new File("src/test/resources").absolutePath
+
     assert new File("target/karma-runner.cfg.js").text.trim().replaceAll("\\\\","/") == """var files = [
   'karma/sausage/angular/uoa/**/*.js',
   'karma/fried-tomato/angular/**/*.js',
-  'src/test/resources/angular/**/*.js',
+  '${fullPath}/angular/**/*.js',
   'src/main/webapp/angular/**'
 ];
 
