@@ -69,7 +69,7 @@ class KarmaBaseMojo extends AbstractMojo {
         if (!overrideFile.exists())
           throw new MojoExecutionException("Cannot find override directory for ${artifact.groupId}:${artifact.artifactId} system property -D${expectedProperty}")
 
-        karmaDirectory(artifact, overrideFile.absolutePath)
+        karmaDirectory(artifact, overrideFile.absolutePath.replace('\\', '/'))
       } else if (artifact.type == 'war') {
         extractWar(artifact)
       } else if (artifact.type == 'jar') { // could be a Servlet 3.0 jar with /META-INF/resources
@@ -151,7 +151,7 @@ class KarmaBaseMojo extends AbstractMojo {
 
     war.close()
 
-    karmaDirectory(artifact, exportDirectory.absolutePath.substring(project.build.directory.length() + 1))
+    karmaDirectory(artifact, exportDirectory.absolutePath.substring(project.build.directory.length() + 1).replace('\\', '/'))
   }
 
   protected void exportFile(JarFile jar, JarEntry next, File exportDirectory, String name) {
@@ -196,7 +196,7 @@ class KarmaBaseMojo extends AbstractMojo {
         }
       }
 
-      karmaDirectory(artifact, exportDirectory.absolutePath.substring(project.build.directory.length() + 1))
+      karmaDirectory(artifact, exportDirectory.absolutePath.substring(project.build.directory.length() + 1).replace('\\', '/'))
     }
 
     jar.close()
