@@ -15,7 +15,7 @@ overrides as necessary.
 Apache Maven Central
 --------------------
 
-The karma-runner plugin is now in Apache Maven Central and is currently version 1.5
+The karma-runner plugin is now in Apache Maven Central and is currently version 1.6
 
 Requirements
 ------------
@@ -114,7 +114,7 @@ Maven Configuration
      <plugin>
        <groupId>com.bluetrainsoftware.maven</groupId>
        <artifactId>karma-maven-plugin</artifactId>
-       <version>1.5</version>
+       <version>1.6</version>
        <configuration>
           <templateFile>karma-template.cfg.js</templateFile> <!-- the file the plugin picks up and replaces stuff in -->
           <karmaFile>karma-runner.cfg.js</karmaFile> <!-- this is the file that gets generated, that Karma runs -->
@@ -127,7 +127,7 @@ None of the configuration options are required, those listed are the defaults. T
      <plugin>
        <groupId>com.bluetrainsoftware.maven</groupId>
        <artifactId>karma-maven-plugin</artifactId>
-       <version>1.5</version>
+       <version>1.6</version>
      </plugin>
 
 I recommend you put this in your war or war-overlay functional parent. It will not fail if it cannot find the karma template, if it doesn't find it, it just issues a warning and exits.
@@ -155,7 +155,7 @@ If you wish to ensure that Karma gets run as part of your tests, you can include
      <plugin>
         <groupId>com.bluetrainsoftware.maven</groupId>
         <artifactId>karma-runner-plugin</artifactId>
-        <version>1.5</version>
+        <version>1.6</version>
         <executions>
           <execution>
             <id>karma-test</id>
@@ -171,5 +171,6 @@ If you wish to ensure that Karma gets run as part of your tests, you can include
 changelog
 =========
 
+1.6 - fixes a path bug in Windows
 1.5 - fixes a bug in the override path that prevented it from being used properly. Updated the documentation.
 1.4 - first release to the public.
