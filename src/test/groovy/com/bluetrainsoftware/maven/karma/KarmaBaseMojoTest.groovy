@@ -64,7 +64,7 @@ class KarmaBaseMojoTest {
     when(project.getArtifacts()).thenReturn(artifacts)
 
     karma.project = project
-    karma.templateFile = "src/test/resources/karma.test.js"
+    karma.templateFile = "src/test/resources"
 
     karma.execute()
 
@@ -103,7 +103,7 @@ class KarmaBaseMojoTest {
 
     karma.project = project
     karma.templateFile = "src/test/resources/karma.test.js"
-    karma.localisationFileName = "src/test/resources/karma.extra.js"
+    karma.localisationFileName = "src/test/resources"
     karma.execute()
 
     String fullPath = new File("src/test/resources").absolutePath

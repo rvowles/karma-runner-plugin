@@ -1,50 +1,44 @@
-karma-maven-plugin
-==================
+= karma-maven-plugin
 
 When running Karma against an artifact that is being used in a team development environment in Java-land, there are typically a few problems you encounter:
 
 * You have people on a variety of operating systems, so what browsers, ports and so forth are available to you are different between people even if the javascript tests are the same
-* War overlays - war overlays allow you to split your projects up into pieces and the final war process will overlay them on top of each other. This allows you to have common javascript in one war overlay,
-common libraries in another, etc. But Karma needs access to all of these files to run, and where they will be checked out for each person will differ (if they have them at all) and this won't work on a build server.
-* Servlet 3 JARs - a bit like war overlays, these are considerably better in that they allow you modularity in your Servlet container. But each jar may have a set of static resources located in
+* Servlet 3 JARs - these are considerably better in that they allow you modularity in your Servlet container. But each jar may have a set of static resources located in
 /META-INF/resources - and Karma Runner takes care of those.
+
+Version 2 supports Karma 0.12 and drops support for War Overlays.
 
 What this plugin lets you do is specify a common configuration file for your Karma settings, let the plugin specify where the files needed for each overlay come from (if any) and also include personal
 overrides as necessary.
 
-Apache Maven Central
---------------------
+== Apache Maven Central
 
-The karma-runner plugin is now in Apache Maven Central and is currently version 1.6
+The karma-runner plugin is now in Apache Maven Central and is currently version 2.1
 
-Requirements
-------------
+== Requirements
+
 * Java 7 - no mucking around with obsolete versions of Java
-* Maven 3.0.4 - its been out forever, really, you should be using it
-* Karma (I'm using 0.8.5) and all its requirements (nodejs, npm, etc)
+* Maven 3.0.4+ - its been out forever, really, you should be using it
+* Karma (I'm using 0.12+) and all its requirements (nodejs, npm, etc)
 
-How it works
-------------
+== How it works
 
-To support overlays, the plugin looks for war dependencies and extracts them into
 
-    target/karma/overlay-artifact-id
+To support overlays, the plugin looks for war dependencies and extracts them into +target/karma/overlay-artifact-id+.
 
 (it always deletes the directory first), so for example, these dependencies:
 
+[source, xml]
+----
     <dependency>
-      <groupId>nz.ac.auckland.common</groupId>
-      <artifactId>common-javascript</artifactId>
+      <groupId>nz.ac.auckland.lmz.javascript</groupId>
+      <artifactId>javascript-common</artifactId>
       <version>[1,2)</version>
-      <classifier>underlay</classifier>
-      <type>war</type>
     </dependency>
     <dependency>
       <groupId>nz.ac.auckland.common</groupId>
       <artifactId>common-angular</artifactId>
       <version>[1,2)</version>
-      <classifier>underlay</classifier>
-      <type>war</type>
     </dependency>
     <dependency>
       <groupId>nz.ac.auckland.common</groupId>
@@ -52,33 +46,46 @@ To support overlays, the plugin looks for war dependencies and extracts them int
       <version>[1,2)</version>
       <scope>test</scope>  <!-- this is a Servlet 3 jar -->
     </dependency>
+----
 
 will be extracted into
 
+[source]
+----
     target/karma/common-javascript
     target/karma/common-angular
     target/karma/common-angular-test
+----
 
 It will make a variable
 
+[source]
+----
     karma.artifactid
+----
 
 available with the directory the files were extracted to, but if there is a - in the artifact, it will be replaced with _ (to make a valid Java variable name), so you would get
 
+[source, properties]
+----
    karma.common_javascript=target/karma/common-javascript
    karma.common_angular=target/karma/common-angular
    karma.common_angular_test=target/karma/common-angular-test
+----
 
 added to the binding given to your template file.
 
 A look in the tests show a sample karma file:
 
-    var files = [
+[source, javascript]
+----
+    files: [
      '${karma.sausage}/angular/uoa/**/*.js',
      '${karma.fried_tomato}/angular/**/*.js',
      '${karma.eggs}/angular/**/*.js',
      'src/main/webapp/angular/**'
-    ];
+    ],
+----
 
 Overriding Artifacts
 --------------------
@@ -92,7 +99,7 @@ incredibly useful and a productive use of time.
 
 To point to a location on disk instead of having the plugin extract the contents of your jar/war file, you can provide a system property with the name:
 
-    karma.common.javascript=/my/projects
+    mvn -Dkarma.common.javascript=../shared-test-resources/src/main/resources/META-INF/resources karma:voyeur
 
 and this will override the extraction (which will not happen) if you are working with that project directly on disk and want Karma to have live updates from it. *This can be a relative path but that karma-runner will turn it into an
 absolute path*. The reason it does this is that the final karma-runner file gets created in the _target_ directory.
@@ -100,12 +107,28 @@ absolute path*. The reason it does this is that the final karma-runner file gets
 Providing extra configuration
 -----------------------------
 
-You can provide an extra configuration file that gets appended on the end. This means you can replace any property that is already defined (as the file is javascript), and typically you would do this
+You can provide an extra configuration file that gets appended based on matching. This means you can replace any property that is already defined (as the file is javascript), and typically you would do this
 for browser support which tends to vary. It is also useful for headless Continuous Integration servers like Jenkins, Team City, and Bamboo.
 
-The default file is
+The default file location is +${user.home}/.karma+
 
-    ${user.home}/.karma/karma.local.js
+And if it finds the line
+
+[source, groovy]
+----
+    ${insertLocal('karma.local.js')}
+----
+
+it will insert that file +${user.home}/.karma/karma.local.js+
+
+A typical example of a Karma local file would be to change the browsers available on your machine. For example:
+
+[source,javascript]
+----
+	config.set({
+	  browsers: ['Chrome', 'Firefox', 'Safari']
+	});
+----
 
 Maven Configuration
 -------------------
@@ -114,11 +137,11 @@ Maven Configuration
      <plugin>
        <groupId>com.bluetrainsoftware.maven</groupId>
        <artifactId>karma-maven-plugin</artifactId>
-       <version>1.6</version>
+       <version>2.1</version>
        <configuration>
           <templateFile>karma-template.cfg.js</templateFile> <!-- the file the plugin picks up and replaces stuff in -->
           <karmaFile>karma-runner.cfg.js</karmaFile> <!-- this is the file that gets generated, that Karma runs -->
-          <karmaLocalisation>${user.home}/.karma/karma.local.js</karmaLocalisation> <!-- where to find the local karma file -->
+          <karmaLocalisation>${user.home}/.karma</karmaLocalisation> <!-- where to find the local karma file -->
        </configuration>
      </plugin>
 
@@ -155,7 +178,7 @@ If you wish to ensure that Karma gets run as part of your tests, you can include
      <plugin>
         <groupId>com.bluetrainsoftware.maven</groupId>
         <artifactId>karma-runner-plugin</artifactId>
-        <version>1.6</version>
+        <version>2.1</version>
         <executions>
           <execution>
             <id>karma-test</id>
@@ -171,6 +194,7 @@ If you wish to ensure that Karma gets run as part of your tests, you can include
 changelog
 =========
 
+2.1 - support for Karma 0.12 and probably 0.10 and dropping support for War overlays (they are not tested for)
 1.6 - fixes a path bug in Windows
 1.5 - fixes a bug in the override path that prevented it from being used properly. Updated the documentation.
 1.4 - first release to the public.

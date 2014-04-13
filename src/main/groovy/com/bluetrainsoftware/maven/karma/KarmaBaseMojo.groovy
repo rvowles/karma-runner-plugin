@@ -39,7 +39,7 @@ class KarmaBaseMojo extends AbstractMojo {
   @Parameter(property = "run.karmaFile")
   protected String karmaFile = "karma-runner.cfg.js";
 
-  @Parameter(property = "run.karmaLocalisation", defaultValue = "\${user.home}/.karma/karma.local.js")
+  @Parameter(property = "run.karmaLocalisation", defaultValue = "\${user.home}/.karma/")
   protected String localisationFileName
 
   Map<String, String> karmaDirectories = new HashMap<>()
@@ -78,25 +78,24 @@ class KarmaBaseMojo extends AbstractMojo {
     }
 
     def karmaEngine = new SimpleTemplateEngine()
-    def binding = [karma:karmaDirectories]
+    def binding = [
+	    karma : karmaDirectories,
+	    insertLocal: { String fileName ->
+		    File f = new File(localisationFileName, fileName)
+
+		    if (f.exists()) {
+			    return f.text
+		    } else {
+			    getLog().error("Unable to insert file ${f.absolutePath}")
+			    return ""
+		    }
+	    }
+    ]
 
     File finalKarmaConfigurationFile = new File(project.build.directory, karmaFile)
 
     FileWriter writer = new FileWriter(finalKarmaConfigurationFile)
     karmaEngine.createTemplate(karmaTemplate).make(binding).writeTo(writer)
-
-    // copy any local extensions file in. Because the config file, this allows overriding of settings from the main file as well
-
-    // spelt this way to annoy Americans
-    if (localisationFileName != null) {
-      File localalisationFile = new File(localisationFileName)
-
-      if (localalisationFile.exists()) {
-        IOUtils.copy(new FileReader(localalisationFile), writer)
-      } else {
-        getLog().warn("karma: localisation file specified ${localisationFileName} but does not exist")
-      }
-    }
 
     writer.close()
 

@@ -1,6 +1,3 @@
-
-
-
 var files = [
   '${karma.sausage}/angular/uoa/**/*.js',
   '${karma.fried_tomato}/angular/**/*.js',
@@ -8,3 +5,4 @@ var files = [
   'src/main/webapp/angular/**'
 ];
 
+${insertLocal('karma.extra.js')}
