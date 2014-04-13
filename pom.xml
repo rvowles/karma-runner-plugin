@@ -9,7 +9,7 @@
 
   <groupId>com.bluetrainsoftware.maven</groupId>
   <artifactId>karma-runner-plugin</artifactId>
-  <version>2.1</version>
+  <version>2.2-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Maven Karma Runner plugin</name>
@@ -23,7 +23,7 @@
     <connection>scm:git:git@github.com:rvowles/karma-runner-plugin</connection>
     <developerConnection>scm:git:git@github.com:rvowles/karma-runner-plugin</developerConnection>
     <url>http://github.com/rvowles/karma-runner-plugin</url>
-    <tag>karma-runner-plugin-2.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
