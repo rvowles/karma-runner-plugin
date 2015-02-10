@@ -42,6 +42,12 @@ class KarmaBaseMojo extends AbstractMojo {
   @Parameter(property = "run.karmaLocalisation", defaultValue = "\${user.home}/.karma/")
   protected String localisationFileName
 
+  @Parameter(property = "run.nodeLocation")
+  protected String nodeLocation = "node";
+
+  @Parameter(property="run.karmaLocation")
+  protected String karmaLocation = "karma";
+
   Map<String, String> karmaDirectories = new HashMap<>()
 
   protected void karmaDirectory(Artifact artifact, String directory) {
@@ -206,9 +212,9 @@ class KarmaBaseMojo extends AbstractMojo {
     ProcessBuilder builder
 
     if (File.separator == '\\') // Windows
-      builder = new ProcessBuilder("cmd", "/C", "karma", "start", configFile.absolutePath)
+      builder = new ProcessBuilder("cmd", "/C", nodeLocation, karmaLocation, "start", configFile.absolutePath)
     else
-      builder = new ProcessBuilder("karma", "start", configFile.absolutePath);
+      builder = new ProcessBuilder(nodeLocation, karmaLocation, "start", configFile.absolutePath);
 
     List<String> command = builder.command();
 

@@ -139,6 +139,8 @@ Maven Configuration
        <artifactId>karma-maven-plugin</artifactId>
        <version>2.1</version>
        <configuration>
+          <nodeLocation>node</nodeLocation> <!-- The command needed to run node, wherever it may be ->
+          <karmaLocation>karma</karma> <!-- The command needed to run karma, wherever it may be -->
           <templateFile>karma-template.cfg.js</templateFile> <!-- the file the plugin picks up and replaces stuff in -->
           <karmaFile>karma-runner.cfg.js</karmaFile> <!-- this is the file that gets generated, that Karma runs -->
           <karmaLocalisation>${user.home}/.karma</karmaLocalisation> <!-- where to find the local karma file -->
